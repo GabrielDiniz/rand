@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<script type="text/javascript">
+	function change() {
+		var str = "" + Math.floor((Math.random() * 500) + 1);
+		var pad = "00000";
+		var ans = pad.substring(0, pad.length - str.length) + str;
+		document.getElementById('image').src=ans+".jpg";
+	}
+	setInterval(change,1500);
+	
+	</script>
+</head>
+<body style="backgroud-color:black">
+<img src="" style="width:100%" id="image">
+</body>
+</html>
