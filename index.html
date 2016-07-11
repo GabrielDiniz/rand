@@ -4,10 +4,10 @@
 	<title></title>
 	<script type="text/javascript">
 	function change() {
-		var str = "" + Math.floor((Math.random() * 5) + 1);
+		var str = "" + Math.floor((Math.random() * 845) + 1);
 		var pad = "00000";
 		var ans = pad.substring(0, pad.length - str.length) + str;
-		document.getElementById('image').src="img/"+ans+".jpg";
+		document.getElementById('image').src="img/i"+ans+".jpg";
 	}
 	setInterval(change,1500);
 	
