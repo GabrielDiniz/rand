@@ -2,18 +2,111 @@
 <html>
 <head>
 	<title></title>
+	<style type="text/css">
+	.seta{
+		font-size: 25px;
+		font-weight: bold;
+		color: white;
+		width: 50px;
+		height: 50px;
+		position: fixed;
+		bottom: 100px;
+		background-color: rgba(255,255,255,0.5);
+		border-radius: 50%;
+		text-align: center;
+		vertical-align: center;
+		line-height: 50px;
+	}
+	#up{
+		left: 50px;
+	}
+	#down{
+		right: 50px;
+	}
+	</style>
 	<script type="text/javascript">
+	var probabilidades, sorteio, procurar;
+	function start(n) {
+		if(typeof localStorage.getItem('probabilidades') =='string'){
+			probabilidades = JSON.parse(localStorage.getItem('probabilidades'));
+			sorteio = JSON.parse(localStorage.getItem('sorteio'));
+		}else{
+			probabilidades = new Array(n);
+			sorteio =  new Array(n);
+			probabilidades.fill(1/n);
+			atualizaSorteio();
+			localStorage.setItem('probabilidades',JSON.stringify(probabilidades));
+			localStorage.setItem('sorteio',JSON.stringify(sorteio));
+		}
+	}
+	function mudaProbabilidades(posicao,diferenca) {
+		diferenca = probabilidades[posicao]*diferenca;
+		var mudar = (diferenca/(probabilidades.length - 1)) * -1;
+		for (var i = 0; i < probabilidades.length; i++) {
+			if(i==posicao){
+				if (probabilidades[i]+diferenca >=0 && probabilidades[i]+diferenca<=1) {
+					probabilidades[i] += diferenca;
+				}
+			}else{
+				if (probabilidades[i]+mudar >=0 && probabilidades[i]+mudar<=1) {
+					probabilidades[i] += mudar;
+				}
+			}
+			
+		};
+		atualizaSorteio();
+		
+	}
+
+	function atualizaSorteio() {
+		sorteio[0] = probabilidades[0];
+		for (var i = 1; i < probabilidades.length; i++) {
+			sorteio[i] = sorteio[i-1] + probabilidades[i];
+		}
+		localStorage.setItem('probabilidades',JSON.stringify(probabilidades));
+		localStorage.setItem('sorteio',JSON.stringify(sorteio));
+	}
+
+	function probRand() {
+		var r = Math.random();
+		var achou = false;
+		var nivel = 2;
+		procurar = probabilidades.length/2;
+		while(!achou){
+			if (sorteio[procurar]>=r) {
+				if (sorteio[procurar-1]<r || procurar == 0) {
+					achou = true;
+				}else{
+					nivel*=2;
+					procurar -= Math.ceil(probabilidades.length/nivel);
+					if (procurar<0) {
+						procurar = 0;
+					};
+				}
+			}else{
+				nivel*=2;
+				procurar += Math.ceil(probabilidades.length/nivel);
+				if (procurar>sorteio.length-1) {
+					procurar=sorteio.length-1;	
+				};
+			}
+		}
+		return procurar;
+	}
+
 	function change() {
-		var str = "" + Math.floor((Math.random() * 845) + 1);
+		var str = "" + (probRand()+1);
 		var pad = "00000";
 		var ans = pad.substring(0, pad.length - str.length) + str;
-		document.getElementById('image').src="img/i"+ans+".jpg";
+		document.getElementById('image').src="img/"+ans+".jpg";
 	}
-	setInterval(change,1500);
-	
+	setInterval(change,2000);
+	start(10);
 	</script>
 </head>
 <body style="background-color:black">
 <img src="" style="width:100%;position: absolute;top: 0; bottom: 0;margin: auto;" id="image">
+<div id="up" class="seta" onclick="mudaProbabilidades(procurar,0.1)">⬆</div>
+<div id="down" class="seta" onclick="mudaProbabilidades(procurar,-0.1)">⬇</div>
 </body>
 </html>
